@@ -1,5 +1,5 @@
 // React built-in
-import { useState, FC } from "react";
+import { useState, FC, FormEvent } from "react";
 
 // Helper & misc
 import { validateEmail, validatePassword } from "../utils/validate";
@@ -20,7 +20,7 @@ interface LoginProps {
 }
 
 const Login: FC<LoginProps> = ({ users }) => {
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorEmail, setErrorEmail] = useState<string>("");
@@ -29,12 +29,7 @@ const Login: FC<LoginProps> = ({ users }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  if (isAuthenticated) {
-    navigate("/account", { replace: true });
-    return
-  }
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
 
     let hasError = false;
@@ -73,9 +68,17 @@ const Login: FC<LoginProps> = ({ users }) => {
   };
 
   return (
-    <Flex align="center" justify="center" className="h-dvh" direction="col">
+    <Flex
+      align="center"
+      justify="center"
+      className="min-h-dvh py-3 overflow-auto"
+      direction="col"
+    >
       <Title>Login Page</Title>
-      <form onSubmit={handleLogin} className="flex gap-10 flex-col w-3/12">
+      <form
+        onSubmit={handleLogin}
+        className="flex gap-10 flex-col w-3/12 min-w-64"
+      >
         <Flex direction="col" gap="2">
           {errorGeneral.length > 0 && (
             <Alert

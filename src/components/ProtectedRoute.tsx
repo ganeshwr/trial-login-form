@@ -1,5 +1,5 @@
 // React built-in
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 
 // Helper & misc
 import { useAuth } from "../store/authContext";
@@ -8,7 +8,7 @@ import { useAuth } from "../store/authContext";
 import { Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const ProtectedRoute: FC<ProtectedRouteProps> = ({ children }) => {

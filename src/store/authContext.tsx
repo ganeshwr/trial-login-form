@@ -1,5 +1,12 @@
 // React built-in
-import { createContext, useContext, useState, ReactNode, FC } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  FC,
+  useEffect,
+} from "react";
 
 // Helper & misc
 import { AuthContextProps } from "../types/AuthContextProps";
@@ -15,6 +22,15 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Check local storage for token during the initial render
+  useEffect(() => {
+    if (!!ls.get("tokenPayload")) {
+      setIsAuthenticated(true);
+    }
+    setLoading(false)
+  }, []);
 
   const login = async (email: string, password: string, users: UserList) => {
     try {
@@ -35,7 +51,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

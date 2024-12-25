@@ -10,6 +10,7 @@ import Loading from "./components/LoadingScreen";
 import { getUsersData } from "./api";
 import { UserList } from "./types/UserList";
 import { User } from "./types/User";
+import GuestRoute from "./components/GuestRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./store/authContext";
 
@@ -50,7 +51,14 @@ const App: FC = () => {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<LoginScreen users={users} />} />
+          <Route
+            path="/login"
+            element={
+              <GuestRoute>
+                <LoginScreen users={users} />
+              </GuestRoute>
+            }
+          />
           <Route
             path="/account"
             element={

@@ -9,11 +9,15 @@ import { getUserDataById } from "../api";
 import { User } from "../types/User";
 import { TokenPayload } from "../types/TokenPayload";
 import ls from "../utils/secureLs";
+import { useAuth } from "../store/authContext";
 
 // 3rd party
 import { useNavigate } from "react-router-dom";
+import { Input, Flex, Button } from "rizzui";
+import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
 
 const Account: FC = () => {
+  const { logout } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
@@ -34,7 +38,7 @@ const Account: FC = () => {
   }, []);
 
   const onLogout = () => {
-    ls.clear();
+    logout()
     navigate("/login");
   };
 
@@ -47,12 +51,20 @@ const Account: FC = () => {
   }
 
   return (
-    <div>
-      <h2>Account Details</h2>
-      <p>First Name: {user.email}</p>
-      <p>Last Name: {user.username}</p>
-      <button onClick={onLogout}>Logout</button>
-    </div>
+    <Flex direction="col" className="min-h-dvh overflow-auto gap-0">
+      <Button variant="text" onClick={onLogout} className="self-end">
+        Logout
+        <ArrowRightStartOnRectangleIcon
+          strokeWidth="2"
+          className="h-4 w-4 ml-2"
+        />
+      </Button>
+      <Flex className="bg-red-600 h-full">
+        <h2>Account Details</h2>
+        <p>First Name: {user.name?.firstname}</p>
+        <p>Last Name: {user.name?.lastname}</p>
+      </Flex>
+    </Flex>
   );
 };
 
