@@ -1,6 +1,9 @@
 // React built-in
 import { useState, useEffect, FC } from "react";
 
+// Components
+import Loading from "./LoadingScreen";
+
 // Helper & misc
 import { getUserDataById } from "../api";
 import { User } from "../types/User";
@@ -40,7 +43,7 @@ const Account: FC = () => {
   }
 
   if (!user) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   return (

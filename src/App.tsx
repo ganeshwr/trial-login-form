@@ -4,6 +4,7 @@ import { useEffect, useState, FC } from "react";
 // Components
 import LoginScreen from "./components/LoginScreen";
 import AccountScreen from "./components/AccountScreen";
+import Loading from "./components/LoadingScreen";
 
 // Helper & misc
 import { getUsersData } from "./api";
@@ -41,7 +42,7 @@ const App: FC = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   return (
@@ -71,13 +72,6 @@ const App: FC = () => {
         />
       </Routes>
     </Router>
-    // <div>
-    //   {tokenPayload ? (
-    //     <AccountScreen tokenPayload={tokenPayload} onLogout={handleLogout} />
-    //   ) : (
-    //     <LoginScreen onLoginSuccess={handleLoginSuccess} users={users} />
-    //   )}
-    // </div>
   );
 };
 
