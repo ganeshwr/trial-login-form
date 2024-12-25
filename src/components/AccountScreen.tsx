@@ -1,5 +1,5 @@
 // React built-in
-import { useState, useEffect, FC } from "react";
+import { useState, useEffect, FC, useRef, ReactNode } from "react";
 
 // Components
 import Loading from "./LoadingScreen";
@@ -13,57 +13,150 @@ import { useAuth } from "../store/authContext";
 
 // 3rd party
 import { useNavigate } from "react-router-dom";
-import { Input, Flex, Button } from "rizzui";
-import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import { Input, Flex, Button, Title, Text, Tooltip, Alert } from "rizzui";
+import {
+  ArrowRightStartOnRectangleIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 
 const Account: FC = () => {
   const { logout } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isClipped, setIsClipped] = useState<boolean>(false);
   const navigate = useNavigate();
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const fullName: string = `${user?.name?.firstname} ${user?.name?.lastname}`;
 
+  const inputStyles = () => ({
+    width: `${(spanRef.current?.offsetWidth || 1) + 2}px`,
+  });
+
+  // Calculating whether full name is cut off or not
+  useEffect(() => {
+    const inputElement = document.getElementById("input-full-name");
+    if (inputElement) {
+      setIsClipped(inputElement.scrollWidth > inputElement.clientWidth);
+    }
+  }, [user]);
+
+  // Fetching current logged in user data
   useEffect(() => {
     const fetchUserData = async () => {
       const tokenPayload: TokenPayload = ls.get("tokenPayload");
-
       try {
         const data = await getUserDataById(tokenPayload.sub);
+
+        if (!data) throw new Error();
+
         setUser(data);
       } catch (err: any) {
-        setError(err.message);
+        setError(err);
       }
+      setLoading(false);
     };
 
     fetchUserData();
   }, []);
 
   const onLogout = () => {
-    logout()
+    logout();
     navigate("/login");
   };
 
-  if (error) {
-    return <p>{error}</p>;
+  // Input to contain user full name
+  let inputFullName: ReactNode = (
+    <Input
+      id="input-full-name"
+      disabled
+      size="xl"
+      style={inputStyles()}
+      value={fullName}
+      className="min-w-52 max-w-xl box-border"
+    />
+  );
+  if (isClipped) {
+    inputFullName = (
+      <Tooltip content={fullName}>
+        <Input
+          id="input-full-name"
+          disabled
+          size="xl"
+          style={inputStyles()}
+          value={fullName}
+          className="min-w-52 max-w-xl box-border"
+        />
+      </Tooltip>
+    );
   }
 
-  if (!user) {
+  // Handle loading state
+  if (loading) {
     return <Loading />;
   }
 
   return (
-    <Flex direction="col" className="min-h-dvh overflow-auto gap-0">
-      <Button variant="text" onClick={onLogout} className="self-end">
+    <Flex direction="col" className="min-h-dvh overflow-auto gap-0 h-full">
+      <Button size="xl" variant="text" onClick={onLogout} className="self-end">
         Logout
         <ArrowRightStartOnRectangleIcon
           strokeWidth="2"
           className="h-4 w-4 ml-2"
         />
       </Button>
-      <Flex className="bg-red-600 h-full">
-        <h2>Account Details</h2>
-        <p>First Name: {user.name?.firstname}</p>
-        <p>Last Name: {user.name?.lastname}</p>
-      </Flex>
+      {error ? (
+        <Flex
+          direction="col"
+          justify="center"
+          align="center"
+          className="min-h-dvh overflow-auto"
+        >
+          <Alert
+            size="xl"
+            color="danger"
+            className="w-fit"
+            icon={<ExclamationTriangleIcon className="w-8 text-red-600" />}
+          >
+            <Text className="font-semibold">Unexpected Error</Text>
+            <Text>Please try again later</Text>
+          </Alert>
+        </Flex>
+      ) : (
+        <Flex className="grow" direction="col" align="center" justify="center">
+          <Title>Account Details</Title>
+          <Flex direction="col" gap="1" className="w-fit">
+            <Text>User ID</Text>
+            <Input
+              disabled
+              size="xl"
+              style={inputStyles()}
+              value={user?.id}
+              className="min-w-52 max-w-xl"
+            />
+          </Flex>
+          <Flex direction="col" gap="1" className="w-fit">
+            <Text>Name {isClipped ? "true" : "false"}</Text>
+            {inputFullName}
+
+            {/* For calculating above inputs dynamic size based on user name length */}
+            <span
+              ref={spanRef}
+              style={{
+                position: "absolute",
+                visibility: "hidden",
+                whiteSpace: "pre",
+                fontFamily: "inherit",
+                fontSize: "inherit",
+                fontWeight: "inherit",
+                letterSpacing: "inherit",
+              }}
+            >
+              {fullName || " "}
+            </span>
+          </Flex>
+        </Flex>
+      )}
     </Flex>
   );
 };

@@ -95,9 +95,10 @@ const Login: FC<LoginProps> = ({ users }) => {
               <Text>{errorGeneral}</Text>
             </Alert>
           )}
-          <Flex direction="col" gap="1">
-            <label>Email</label>
+          <Flex direction="col">
             <Input
+              label="Email"
+              placeholder="Enter your email"
               disabled={loading}
               onClear={() => setEmail("")}
               clearable={!loading}
@@ -108,10 +109,9 @@ const Login: FC<LoginProps> = ({ users }) => {
               onChange={(e) => setEmail(e.target.value)}
               error={errorEmail}
             />
-          </Flex>
-          <Flex direction="col" gap="1">
-            <label>Password</label>
             <Password
+              label="Password"
+              placeholder="Enter your password"
               disabled={loading}
               onClear={() => setPassword("")}
               clearable={!loading}
