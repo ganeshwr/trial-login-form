@@ -10,8 +10,10 @@ import Loading from "./components/LoadingScreen";
 import { getUsersData } from "./api";
 import { UserList } from "./types/UserList";
 import { User } from "./types/User";
-import ls from "./utils/secureLs";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./store/authContext";
 
+// 3rd party
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,7 +22,6 @@ import {
 } from "react-router-dom";
 
 const App: FC = () => {
-  const isAuthenticated = !!ls.get("tokenPayload");
   const [users, setUsers] = useState<UserList>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -46,32 +47,22 @@ const App: FC = () => {
   }
 
   return (
-    <Router>
-      <Routes>
-        {/* Redirect to login if not authenticated */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/account" />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        {/* Login route */}
-        <Route path="/login" element={<LoginScreen users={users} />} />
-
-        {/* Protected Account route */}
-        <Route
-          path="/account"
-          element={
-            isAuthenticated ? <AccountScreen /> : <Navigate to="/login" />
-          }
-        />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginScreen users={users} />} />
+          <Route
+            path="/account"
+            element={
+              <ProtectedRoute>
+                <AccountScreen />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 

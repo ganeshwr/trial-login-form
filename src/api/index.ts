@@ -14,7 +14,7 @@ export const getUsersData = async () => {
 };
 
 // Login function
-export const login = async (username: string, password: string) => {
+export const doLogin = async (username: string, password: string) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, {
       username,

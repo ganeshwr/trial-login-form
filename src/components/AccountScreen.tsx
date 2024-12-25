@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 const Account: FC = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {

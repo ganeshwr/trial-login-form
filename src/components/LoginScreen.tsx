@@ -2,14 +2,11 @@
 import { useState, FC } from "react";
 
 // Helper & misc
-import { login } from "../api";
 import { validateEmail, validatePassword } from "../utils/validate";
 import { UserList } from "../types/UserList";
-import { TokenPayload } from "../types/TokenPayload";
-import ls from "../utils/secureLs";
+import { useAuth } from "../store/authContext";
 
 // 3rd party
-import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { Title, Button, Flex, Input, Password, Alert, Text } from "rizzui";
 import {
@@ -23,13 +20,19 @@ interface LoginProps {
 }
 
 const Login: FC<LoginProps> = ({ users }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorEmail, setErrorEmail] = useState("");
-  const [errorPassword, setErrorPassword] = useState("");
-  const [errorGeneral, setErrorGeneral] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { login, isAuthenticated } = useAuth();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [errorEmail, setErrorEmail] = useState<string>("");
+  const [errorPassword, setErrorPassword] = useState<string>("");
+  const [errorGeneral, setErrorGeneral] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  if (isAuthenticated) {
+    navigate("/account", { replace: true });
+    return
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,12 +64,7 @@ const Login: FC<LoginProps> = ({ users }) => {
 
     try {
       setLoading(true);
-      const targetUser = users.find((user) => user.email == email);
-      const data = await login(targetUser?.username ?? email, password);
-
-      const decodedToken = jwtDecode<TokenPayload>(data.token);
-      ls.set("tokenPayload", { ...decodedToken });
-
+      await login(email, password, users);
       navigate("/account");
     } catch (err: any) {
       setErrorGeneral(err.message);
