@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@apollo/client": "^3.12.4",
     "@floating-ui/react": "^0.27.2",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.7.9",
+    "graphql": "^16.10.0",
     "i18next": "^24.2.0",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",

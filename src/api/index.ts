@@ -1,38 +1,33 @@
-import axios from "axios";
+// 3rd party
+import { gql } from "@apollo/client";
 
-const API_URL = "https://fakestoreapi.com";
-
-// Get all user data
-export const getUsersData = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/users`);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch users data");
+// Mutation for login
+export const LOGIN_MUTATION = gql`
+  mutation Login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      access_token
+      refresh_token
+    }
   }
-};
+`;
 
-// Login function
-export const doLogin = async (username: string, password: string) => {
-  try {
-    const response = await axios.post(`${API_URL}/auth/login`, {
-      username,
-      password,
-    });
-    return response.data;
-  } catch (error: any) {
-    throw new Error(error.response.data ?? "Invalid email or password");
+// Mutation for refresh token
+export const REFRESH_TOKEN_MUTATION = gql`
+  mutation RefreshToken($refreshToken: String!) {
+    refreshToken(refreshToken: $refreshToken) {
+      access_token
+      refresh_token
+    }
   }
-};
+`;
 
-// Get user data by id
-export const getUserDataById = async (userId: number) => {
-  try {
-    const response = await axios.get(`${API_URL}/users/${userId}`);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch user data by id");
+// Query to get current logged in user's profile
+export const MY_PROFILE_QUERY = gql`
+  query {
+    myProfile {
+      id
+      name
+      avatar
+    }
   }
-};
+`;

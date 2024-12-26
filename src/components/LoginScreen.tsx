@@ -6,12 +6,10 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 // Helper & misc
 import { validateEmail, validatePassword } from "../utils/validate";
-import { UserList } from "../types/UserList";
 import { useAuth } from "../store/authContext";
 import { useGlobalTranslation } from "../utils/useGlobalTranslation";
 
 // 3rd party
-import { useNavigate } from "react-router-dom";
 import { Title, Button, Flex, Input, Password, Alert, Text } from "rizzui";
 import {
   EnvelopeIcon,
@@ -19,11 +17,7 @@ import {
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
-interface LoginProps {
-  users: UserList;
-}
-
-const Login: FC<LoginProps> = ({ users }) => {
+const Login: FC = () => {
   const { t } = useGlobalTranslation()
   const { login } = useAuth();
   const [email, setEmail] = useState<string>("");
@@ -32,7 +26,6 @@ const Login: FC<LoginProps> = ({ users }) => {
   const [errorPassword, setErrorPassword] = useState<string>("");
   const [errorGeneral, setErrorGeneral] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -64,8 +57,7 @@ const Login: FC<LoginProps> = ({ users }) => {
 
     try {
       setLoading(true);
-      await login(email, password, users);
-      navigate("/account");
+      await login(email, password);
     } catch (err: any) {
       setErrorGeneral(
         err.message == "username or password is incorrect"

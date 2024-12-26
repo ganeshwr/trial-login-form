@@ -10,35 +10,34 @@ import {
 
 // Helper & misc
 import { AuthContextProps } from "../types/AuthContextProps";
-import { UserList } from "../types/UserList";
-import { TokenPayload } from "../types/TokenPayload";
-import { doLogin } from "../api";
+import { LOGIN_MUTATION } from "../api";
 import ls from "../utils/secureLs";
 
 // 3rd party
-import { jwtDecode } from "jwt-decode";
+import { useMutation } from "@apollo/client";
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+const keyName = "token"
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [doLogin] = useMutation(LOGIN_MUTATION);
 
   // Check local storage for token during the initial render
   useEffect(() => {
-    if (!!ls.get("tokenPayload")) {
+    if (!!ls.get(keyName)) {
       setIsAuthenticated(true);
     }
-    setLoading(false)
+    setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string, users: UserList) => {
+  const login = async (email: string, password: string) => {
     try {
-      const targetUser = users.find((user) => user.email == email);
-      const data = await doLogin(targetUser?.username ?? email, password);
+      const { data } = await doLogin({ variables: { email, password } });
+      const { access_token, refresh_token } = data.login;
 
-      const decodedToken = jwtDecode<TokenPayload>(data.token);
-      ls.set("tokenPayload", { ...decodedToken });
+      ls.set(keyName, { access_token, refresh_token });
       setIsAuthenticated(true);
     } catch (err) {
       throw err;
@@ -46,7 +45,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const logout = () => {
-    ls.remove("tokenPayload");
+    ls.remove(keyName);
     setIsAuthenticated(false);
   };
 

@@ -5,12 +5,11 @@ import { useState, useEffect, FC, useRef, ReactNode } from "react";
 import Loading from "./LoadingScreen";
 
 // Helper & misc
-import { getUserDataById } from "../api";
+import { MY_PROFILE_QUERY } from "../api";
 import { User } from "../types/User";
-import { TokenPayload } from "../types/TokenPayload";
-import ls from "../utils/secureLs";
 import { useAuth } from "../store/authContext";
 import { useGlobalTranslation } from "../utils/useGlobalTranslation";
+import client from "../apolloClient";
 
 // 3rd party
 import { useNavigate } from "react-router-dom";
@@ -33,7 +32,7 @@ import {
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const Account: FC = () => {
-  const { t } = useGlobalTranslation()
+  const { t } = useGlobalTranslation();
   const { logout } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string>("");
@@ -42,38 +41,37 @@ const Account: FC = () => {
   const [confirmLogout, setConfirmLogout] = useState<boolean>(false);
   const navigate = useNavigate();
   const spanRef = useRef<HTMLSpanElement>(null);
-  const fullName: string = `${user?.name?.firstname} ${user?.name?.lastname}`;
 
   const inputStyles = () => ({
     width: `${(spanRef.current?.offsetWidth || 1) + 2}px`,
   });
 
+  // Fetching current logged in user profile
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data } = await client.query({
+          query: MY_PROFILE_QUERY,
+        });
+        setUser(data.myProfile);
+      } catch (err: any) {
+        setError(err.message || "An error occurred");
+      }
+
+      setLoading(false);
+    };
+
+    fetchProfile();
+  }, [client]);
+
   // Calculating whether full name is cut off or not
   useEffect(() => {
     const inputElement = document.getElementById("input-full-name");
     if (inputElement) {
+      console.log(inputElement, user?.name);
       setIsClipped(inputElement.scrollWidth > inputElement.clientWidth);
     }
   }, [user]);
-
-  // Fetching current logged in user data
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const tokenPayload: TokenPayload = ls.get("tokenPayload");
-      try {
-        const data = await getUserDataById(tokenPayload.sub);
-
-        if (!data) throw new Error();
-
-        setUser(data);
-      } catch (err: any) {
-        setError(err);
-      }
-      setLoading(false);
-    };
-
-    fetchUserData();
-  }, []);
 
   const onLogout = () => {
     logout();
@@ -87,20 +85,20 @@ const Account: FC = () => {
       disabled
       size="xl"
       style={inputStyles()}
-      value={fullName}
+      value={user?.name}
       className="min-w-52 max-w-xl box-border"
     />
   );
   // If full name is clipped, show tooltip (showing complete full name) when hovering on the input
   if (isClipped) {
     inputFullName = (
-      <Tooltip content={fullName}>
+      <Tooltip content={user?.name}>
         <Input
           id="input-full-name"
           disabled
           size="xl"
           style={inputStyles()}
-          value={fullName}
+          value={user?.name}
           className="min-w-52 max-w-xl box-border"
         />
       </Tooltip>
@@ -184,7 +182,7 @@ const Account: FC = () => {
                   letterSpacing: "inherit",
                 }}
               >
-                {fullName || " "}
+                {user?.name || " "}
               </span>
             </Flex>
           </Flex>
