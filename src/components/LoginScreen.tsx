@@ -1,10 +1,14 @@
 // React built-in
 import { useState, FC, FormEvent } from "react";
 
+// Components
+import LanguageSwitcher from "./LanguageSwitcher";
+
 // Helper & misc
 import { validateEmail, validatePassword } from "../utils/validate";
 import { UserList } from "../types/UserList";
 import { useAuth } from "../store/authContext";
+import { useGlobalTranslation } from "../utils/useGlobalTranslation";
 
 // 3rd party
 import { useNavigate } from "react-router-dom";
@@ -20,6 +24,7 @@ interface LoginProps {
 }
 
 const Login: FC<LoginProps> = ({ users }) => {
+  const { t } = useGlobalTranslation()
   const { login } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -38,17 +43,17 @@ const Login: FC<LoginProps> = ({ users }) => {
       validateEmail(email).rule == "required" &&
       !validateEmail(email).valid
     ) {
-      setErrorEmail("Email is required");
+      setErrorEmail("login.validation.email_required");
       hasError = true;
     }
 
     if (validateEmail(email).rule == "pattern" && !validateEmail(email).valid) {
-      setErrorEmail("Invalid Email");
+      setErrorEmail("login.validation.email_invalid");
       hasError = true;
     }
 
     if (!validatePassword(password)) {
-      setErrorPassword("Password is required");
+      setErrorPassword("login.validation.password_required");
       hasError = true;
     }
 
@@ -62,7 +67,11 @@ const Login: FC<LoginProps> = ({ users }) => {
       await login(email, password, users);
       navigate("/account");
     } catch (err: any) {
-      setErrorGeneral(err.message);
+      setErrorGeneral(
+        err.message == "username or password is incorrect"
+          ? t("login.incorrect_credential")
+          : err.message
+      );
     }
     setLoading(false);
   };
@@ -74,7 +83,7 @@ const Login: FC<LoginProps> = ({ users }) => {
       className="min-h-dvh py-3 overflow-auto"
       direction="col"
     >
-      <Title>Login Page</Title>
+      <Title>{t("login.login_page")}</Title>
       <form
         onSubmit={handleLogin}
         className="flex gap-10 flex-col w-3/12 min-w-64"
@@ -91,14 +100,14 @@ const Login: FC<LoginProps> = ({ users }) => {
               closable
               onClose={() => setErrorGeneral("")}
             >
-              <Text className="font-semibold">Failed to log in</Text>
+              <Text className="font-semibold">{t("login.login_failed")}</Text>
               <Text>{errorGeneral}</Text>
             </Alert>
           )}
           <Flex direction="col">
             <Input
-              label="Email"
-              placeholder="Enter your email"
+              label={t("login.email")}
+              placeholder={t("login.email_placeholder")}
               disabled={loading}
               onClear={() => setEmail("")}
               clearable={!loading}
@@ -107,11 +116,11 @@ const Login: FC<LoginProps> = ({ users }) => {
               value={email}
               onInput={() => setErrorEmail("")}
               onChange={(e) => setEmail(e.target.value)}
-              error={errorEmail}
+              error={t(errorEmail)}
             />
             <Password
-              label="Password"
-              placeholder="Enter your password"
+              label={t("login.password")}
+              placeholder={t("login.password_placeholder")}
               disabled={loading}
               onClear={() => setPassword("")}
               clearable={!loading}
@@ -120,14 +129,15 @@ const Login: FC<LoginProps> = ({ users }) => {
               value={password}
               onInput={() => setErrorPassword("")}
               onChange={(e) => setPassword(e.target.value)}
-              error={errorPassword}
+              error={t(errorPassword)}
             />
           </Flex>
         </Flex>
         <Button type="submit" isLoading={loading}>
-          Login
+          {t("login.btn_login")}
         </Button>
       </form>
+      <LanguageSwitcher/>
     </Flex>
   );
 };

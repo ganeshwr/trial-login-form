@@ -46,7 +46,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const logout = () => {
-    ls.clear();
+    ls.remove("tokenPayload");
     setIsAuthenticated(false);
   };
 

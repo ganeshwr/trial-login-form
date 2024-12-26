@@ -15,9 +15,11 @@
     "@heroicons/react": "^2.2.0",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.7.9",
+    "i18next": "^24.2.0",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^15.2.0",
     "react-router-dom": "^7.1.1",
     "rizzui": "^0.8.7",
     "secure-ls": "^2.0.0"

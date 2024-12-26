@@ -21,9 +21,8 @@ export const doLogin = async (username: string, password: string) => {
       password,
     });
     return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Invalid email or password");
+  } catch (error: any) {
+    throw new Error(error.response.data ?? "Invalid email or password");
   }
 };
 

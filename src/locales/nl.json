@@ -1,0 +1,34 @@
+{
+  "login": {
+    "validation": {
+      "email_required": "E-mailadres is verplicht",
+      "email_invalid": "Ongeldig e-mailadres",
+      "password_required": "Wachtwoord is verplicht"
+    },
+    "incorrect_credential": "Gebruikersnaam of wachtwoord is onjuist",
+    "login_failed": "Inloggen mislukt",
+    "login_page": "Inlogpagina",
+    "email": "E-mailadres",
+    "email_placeholder": "Voer uw e-mailadres in",
+    "password": "Wachtwoord",
+    "password_placeholder": "Voer uw wachtwoord in",
+    "btn_login": "Inloggen"
+  },
+
+  "account": {
+    "btn_logout": "Uitloggen",
+    "unexpected_error": {
+      "title": "Onverwachte fout",
+      "message": "Probeer het later opnieuw"
+    },
+    "account_details": "Accountgegevens",
+    "user_id": "Gebruikers-ID",
+    "name": "Naam",
+    "confirm_logout": {
+      "title": "Bevestig uitloggen",
+      "message": "Weet u zeker dat u wilt uitloggen?",
+      "btn_negative": "Annuleren",
+      "btn_positive": "Ja, uitloggen"
+    }
+  }
+}

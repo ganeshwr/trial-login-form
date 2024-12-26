@@ -10,6 +10,7 @@ import { User } from "../types/User";
 import { TokenPayload } from "../types/TokenPayload";
 import ls from "../utils/secureLs";
 import { useAuth } from "../store/authContext";
+import { useGlobalTranslation } from "../utils/useGlobalTranslation";
 
 // 3rd party
 import { useNavigate } from "react-router-dom";
@@ -29,8 +30,10 @@ import {
   ExclamationTriangleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Account: FC = () => {
+  const { t } = useGlobalTranslation()
   const { logout } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string>("");
@@ -88,6 +91,7 @@ const Account: FC = () => {
       className="min-w-52 max-w-xl box-border"
     />
   );
+  // If full name is clipped, show tooltip (showing complete full name) when hovering on the input
   if (isClipped) {
     inputFullName = (
       <Tooltip content={fullName}>
@@ -111,24 +115,27 @@ const Account: FC = () => {
   return (
     <>
       <Flex direction="col" className="min-h-dvh overflow-auto gap-0 h-full">
-        <Button
-          size="xl"
-          variant="text"
-          onClick={() => setConfirmLogout(true)}
-          className="self-end"
-        >
-          Logout
-          <ArrowRightStartOnRectangleIcon
-            strokeWidth="2"
-            className="h-4 w-4 ml-2"
-          />
-        </Button>
+        <Flex justify="end" align="center" className="gap-0">
+          <LanguageSwitcher />
+          <Button
+            size="xl"
+            variant="text"
+            onClick={() => setConfirmLogout(true)}
+            className="self-end"
+          >
+            {t("account.btn_logout")}
+            <ArrowRightStartOnRectangleIcon
+              strokeWidth="2"
+              className="h-4 w-4 ml-2"
+            />
+          </Button>
+        </Flex>
         {error ? (
           <Flex
             direction="col"
             justify="center"
             align="center"
-            className="min-h-dvh overflow-auto"
+            className="min-h-dvh overflow-auto pb-12"
           >
             <Alert
               size="xl"
@@ -136,20 +143,22 @@ const Account: FC = () => {
               className="w-fit"
               icon={<ExclamationTriangleIcon className="w-8 text-red-600" />}
             >
-              <Text className="font-semibold">Unexpected Error</Text>
-              <Text>Please try again later</Text>
+              <Text className="font-semibold">
+                {t("account.unexpected_error.title")}
+              </Text>
+              <Text>{t("account.unexpected_error.message")}</Text>
             </Alert>
           </Flex>
         ) : (
           <Flex
-            className="grow"
+            className="grow pb-12"
             direction="col"
             align="center"
             justify="center"
           >
-            <Title>Account Details</Title>
+            <Title>{t("account.account_details")}</Title>
             <Flex direction="col" gap="1" className="w-fit">
-              <Text>User ID</Text>
+              <Text>{t("account.user_id")}</Text>
               <Input
                 disabled
                 size="xl"
@@ -159,7 +168,7 @@ const Account: FC = () => {
               />
             </Flex>
             <Flex direction="col" gap="1" className="w-fit">
-              <Text>Name {isClipped ? "true" : "false"}</Text>
+              <Text>{t("account.name")}</Text>
               {inputFullName}
 
               {/* For calculating above inputs dynamic size based on user name length */}
@@ -181,10 +190,14 @@ const Account: FC = () => {
           </Flex>
         )}
       </Flex>
-      <Modal size="sm" isOpen={confirmLogout} onClose={() => setConfirmLogout(false)}>
+      <Modal
+        size="sm"
+        isOpen={confirmLogout}
+        onClose={() => setConfirmLogout(false)}
+      >
         <div className="m-auto px-7 pt-6 pb-8">
           <div className="mb-7 flex items-center justify-between">
-            <Title as="h3">Confirm logout</Title>
+            <Title as="h3">{t("account.confirm_logout.title")}</Title>
             <ActionIcon
               size="sm"
               variant="text"
@@ -193,10 +206,14 @@ const Account: FC = () => {
               <XMarkIcon className="h-auto w-6" strokeWidth={1.8} />
             </ActionIcon>
           </div>
-          <Text className="mb-7">Are you sure you want to log out?</Text>
+          <Text className="mb-7">{t("account.confirm_logout.message")}</Text>
           <Flex justify="end">
-            <Button onClick={() => setConfirmLogout(false)} variant="flat">Cancel</Button>
-            <Button onClick={onLogout} color="danger">Yes, Log Out</Button>
+            <Button onClick={() => setConfirmLogout(false)} variant="flat">
+              {t("account.confirm_logout.btn_negative")}
+            </Button>
+            <Button onClick={onLogout} color="danger">
+              {t("account.confirm_logout.btn_positive")}
+            </Button>
           </Flex>
         </div>
       </Modal>
