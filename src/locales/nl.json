@@ -29,6 +29,7 @@
       "message": "Weet u zeker dat u wilt uitloggen?",
       "btn_negative": "Annuleren",
       "btn_positive": "Ja, uitloggen"
-    }
+    },
+    "session_expired": "Sessie verlopen. Log alstublieft opnieuw in."
   }
 }

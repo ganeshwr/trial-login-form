@@ -1,5 +1,5 @@
 // React built-in
-import { useState, FC, FormEvent } from "react";
+import { useState, FC, FormEvent, useEffect } from "react";
 
 // Components
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -18,7 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const Login: FC = () => {
-  const { t } = useGlobalTranslation()
+  const { t } = useGlobalTranslation();
   const { login } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -26,6 +26,14 @@ const Login: FC = () => {
   const [errorPassword, setErrorPassword] = useState<string>("");
   const [errorGeneral, setErrorGeneral] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const message = sessionStorage.getItem("flashMessage");
+    if (message) {
+      setErrorGeneral(message);
+      sessionStorage.removeItem("flashMessage");
+    }
+  }, []);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -61,7 +69,7 @@ const Login: FC = () => {
     } catch (err: any) {
       setErrorGeneral(
         err.message == "username or password is incorrect"
-          ? t("login.incorrect_credential")
+          ? "login.incorrect_credential"
           : err.message
       );
     }
@@ -93,7 +101,7 @@ const Login: FC = () => {
               onClose={() => setErrorGeneral("")}
             >
               <Text className="font-semibold">{t("login.login_failed")}</Text>
-              <Text>{errorGeneral}</Text>
+              <Text>{t(errorGeneral)}</Text>
             </Alert>
           )}
           <Flex direction="col">
@@ -129,7 +137,7 @@ const Login: FC = () => {
           {t("login.btn_login")}
         </Button>
       </form>
-      <LanguageSwitcher/>
+      <LanguageSwitcher />
     </Flex>
   );
 };

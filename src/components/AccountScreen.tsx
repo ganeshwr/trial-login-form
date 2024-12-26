@@ -12,7 +12,6 @@ import { useGlobalTranslation } from "../utils/useGlobalTranslation";
 import client from "../apolloClient";
 
 // 3rd party
-import { useNavigate } from "react-router-dom";
 import {
   Input,
   Flex,
@@ -39,7 +38,6 @@ const Account: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isClipped, setIsClipped] = useState<boolean>(false);
   const [confirmLogout, setConfirmLogout] = useState<boolean>(false);
-  const navigate = useNavigate();
   const spanRef = useRef<HTMLSpanElement>(null);
 
   const inputStyles = () => ({
@@ -55,6 +53,10 @@ const Account: FC = () => {
         });
         setUser(data.myProfile);
       } catch (err: any) {
+        if (err.message == "Unauthorized") {
+          sessionStorage.setItem("flashMessage", "account.session_expired");
+          logout();
+        }
         setError(err.message || "An error occurred");
       }
 
@@ -71,11 +73,6 @@ const Account: FC = () => {
       setIsClipped(inputElement.scrollWidth > inputElement.clientWidth);
     }
   }, [user, isClipped]);
-
-  const onLogout = () => {
-    logout();
-    navigate("/login");
-  };
 
   // Input to contain user full name
   let inputFullName: ReactNode = (
@@ -208,7 +205,7 @@ const Account: FC = () => {
             <Button onClick={() => setConfirmLogout(false)} variant="flat">
               {t("account.confirm_logout.btn_negative")}
             </Button>
-            <Button onClick={onLogout} color="danger">
+            <Button onClick={logout} color="danger">
               {t("account.confirm_logout.btn_positive")}
             </Button>
           </Flex>

@@ -29,6 +29,7 @@
       "message": "Are you sure you want to log out?",
       "btn_negative": "Cancel",
       "btn_positive": "Yes, Log Out"
-    }
+    },
+    "session_expired": "Session expired. Please log in again."
   }
 }
