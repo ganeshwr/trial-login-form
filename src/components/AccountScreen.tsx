@@ -68,10 +68,9 @@ const Account: FC = () => {
   useEffect(() => {
     const inputElement = document.getElementById("input-full-name");
     if (inputElement) {
-      console.log(inputElement, user?.name);
       setIsClipped(inputElement.scrollWidth > inputElement.clientWidth);
     }
-  }, [user]);
+  }, [user, isClipped]);
 
   const onLogout = () => {
     logout();
