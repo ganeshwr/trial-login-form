@@ -68,7 +68,7 @@ const Login: FC = () => {
       await login(email, password);
     } catch (err: any) {
       setErrorGeneral(
-        err.message == "username or password is incorrect"
+        err.message == "Unauthorized"
           ? "login.incorrect_credential"
           : err.message
       );
